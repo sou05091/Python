@@ -1,8 +1,12 @@
 n = int(input())
+a = input().split()
+m = int(input())
+b = input().split()
 rs = []
-for _ in range(n):
-    m = int(input())
-    rs.append(m)
-res = sorted(rs)
-for r in res:
-    print(r)
+res = 0
+for x in b:
+    for y in a:
+        if x == y:
+            res += 1
+    rs.append(res)
+print(rs)
