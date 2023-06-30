@@ -2,53 +2,72 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 
-data = []  # 데이터를 담을 리스트
+job_list_num = [5343, 5339, 5341, 5558, 5995, 5342, 5340, 5344, 5434, 5709, 5345, 5349, 5347, 5631, 5708, 5350, 5348, 5346, 5770, 5497, 5498, 5647, 5996, 5861, 5862]
+key_value_dict = {
+    "디스트로이어": 5343,
+    "워로드": 5339,
+    "버서커": 5341,
+    "홀리나이트": 5558,
+    "슬레이어": 5995,
+    "배틀마스터": 5342,
+    "인파이터": 5340,
+    "기공사": 5344,
+    "창술사": 5434,
+    "스트라이커": 5709,
+    "데빌헌터": 5345,
+    "블래스터": 5349,
+    "호크아이": 5347,
+    "스카우터": 5631,
+    "건슬링어": 5708,
+    "바드": 5350,
+    "서머너": 5348,
+    "아르카나": 5346,
+    "소서리스": 5770,
+    "블레이드": 5497,
+    "데모닉": 5498,
+    "리퍼": 5647,
+    "소울이터": 5996,
+    "도화가": 5861,
+    "기상술사": 5862
+}
 
-for i in range(2):
-    url = "https://www.inven.co.kr/board/lostark/5647?p=" + str(i)  # 크롤링하려는 웹 페이지의 URL
-    response = requests.get(url)
-    html = response.text
-    soup = BeautifulSoup(html, 'html.parser')
+for job, number in key_value_dict.items():
+    data = []  # 각 작업마다 독립적인 데이터 리스트 생성
 
-    post_list = soup.find_all('td', class_='tit')  # 게시판 글 목록을 감싸는 태그를 선택합니다.
-    for post in post_list:
-        title_element = post.find('a', class_='subject-link')  # 게시글 제목을 담고 있는 <a> 태그를 선택합니다.
-        title = title_element.get_text(strip=True)  # 게시글 제목을 가져옵니다.
-        
-        # 딕셔너리에 데이터 추가
-        data.append({'제목': title})
+    for i in range(1):
+        url = f"https://www.inven.co.kr/board/lostark/{number}?p={i}"
+        response = requests.get(url)
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
 
-    content_list_num = soup.find_all('td', class_='num')
-    for content_num in content_list_num:
-        num_element = content_num.find('a')  # 각 게시물의 링크를 선택합니다.
-        content_url = "https://www.inven.co.kr/board/lostark/5647/" + str(content_num)  # 게시물의 URL을 생성합니다.
-        content_response = requests.get(content_url)
-        content_html = content_response.text
-        content_soup = BeautifulSoup(content_html, 'html.parser')
-        content_post = content_soup.find('div', class_='articleContent')  # 게시물 내용을 선택합니다.
-        
-        if content_post:
-            content = content_post.get_text(strip=True)  # 게시물 내용을 가져옵니다.
-            # 딕셔너리에 데이터 추가
-            data.append({'게시판 내용': content})
-        else:
-            # 해당 게시물의 내용이 없는 경우 데이터에 빈 문자열로 추가합니다.
-            data.append({'게시판 내용': '내용이 없습니다.'})
+        post_list = soup.find_all('td', class_='tit')
+        content_list_num = soup.find_all('td', class_='num')
 
+        for post, content_num in zip(post_list, content_list_num):
+            title_element = post.find('a', class_='subject-link')
+            title = title_element.get_text(strip=True)
 
-# CSV 파일 경로
-csv_file = 'test.csv'
+            content_num_test = content_num.find('span')
+            num = content_num_test.get_text(strip=True)
+            content_url = f"https://www.inven.co.kr/board/lostark/{number}/{num}"
+            print(num)
+            content_response = requests.get(content_url)
+            content_html = content_response.text
+            content_soup = BeautifulSoup(content_html, 'html.parser')
+            content_post = content_soup.find('div', id='powerbbsContent')
 
-# CSV 파일 열기
-with open(csv_file, 'w', encoding='utf-8-sig', newline='') as csvfile:
-    # CSV writer 생성
-    writer = csv.DictWriter(csvfile, fieldnames=['제목', '게시판 내용'])
+            if content_post:
+                content = content_post.get_text(strip=True)
+            else:
+                content = '내용이 없습니다.'
 
-    # 헤더 작성
-    writer.writeheader()
+            data.append({'제목': title, '게시판 내용': content})
 
-    # 데이터 작성
-    writer.writerows(data)
+    csv_file = f'test_{job}.csv'
 
-# 작업 완료
-print(f'데이터가 {csv_file}에 저장되었습니다.')
+    with open(csv_file, 'w', encoding='utf-8-sig', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=['제목', '게시판 내용'])
+        writer.writeheader()
+        writer.writerows(data)
+
+    print(f'데이터가 {csv_file}에 저장되었습니다.')
