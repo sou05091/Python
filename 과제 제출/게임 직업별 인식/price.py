@@ -1,39 +1,39 @@
 import csv
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
 
-data = [{'직업': '디스트로이어', '각인서': 1, '가격': 50},
-        {'직업': '워로드', '각인서': 1, '가격': 50},
-        {'직업': '버서커', '각인서': 1, '가격': 50},
-        {'직업': '홀리나이트', '각인서': 1, '가격': 50},
-        {'직업': '슬레이어', '각인서': 1, '가격': 50},
-        {'직업': '배틀마스터', '각인서': 1, '가격': 50},
-        {'직업': '인파이터', '각인서': 1, '가격': 50},
-        {'직업': '기공사', '각인서': 1, '가격': 50},
-        {'직업': '창술사', '각인서': 1, '가격': 50},
-        {'직업': '스트라이커', '각인서': 1, '가격': 50},
-        {'직업': '데빌헌터', '각인서': 1, '가격': 50},
-        {'직업': '블래스터', '각인서': 1, '가격': 50},
-        {'직업': '호크아이', '각인서': 1, '가격': 50},
-        {'직업': '스카우터', '각인서': 1, '가격': 50},
-        {'직업': '건슬링어', '각인서': 1, '가격': 50},
-        {'직업': '바드', '각인서': 1, '가격': 50},
-        {'직업': '서머너', '각인서': 1, '가격': 50},
-        {'직업': '아르카나', '각인서': 1, '가격': 50},
-        {'직업': '소서리스', '각인서': 1, '가격': 50},
-        {'직업': '블레이드', '각인서': 1, '가격': 50},
-        {'직업': '데모닉', '각인서': 1, '가격': 50},
-        {'직업': '리퍼', '각인서': 1, '가격': 50},
-        {'직업': '소울이터', '각인서': 1, '가격': 50},
-        {'직업': '도화가', '각인서': 1, '가격': 50},
-        {'직업': '기상술사', '각인서': 1, '가격': 50},
-        ]
+def crw():
+    # 크롬드라이버 실행
+    driver = webdriver.Chrome('chromedriver.exe')
+    # 크롬 드라이버에 url 주소 넣고 실행
+    driver.get('https://loawa.com/shop/trade-shop')
+    # 페이지가 완전히 로딩되도록 3초동안 기다림
+    time.sleep(10)
 
-csv_file = 'price.csv'
+    # 데이터 추출
+    post_list = driver.find_elements_by_css_selector('td.item-name.text-left.text-grade4')
+    job_name = [item.text for item in post_list]
+    job_price = driver.find_elements_by_css_selector('td.item-transaction.text-right')
+    prices = [item.text for item in job_price]
 
-with open(csv_file, 'w', encoding='utf-8-sig', newline='') as csvfile:
-    fieldnames = ['직업', '각인서', '가격']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    # 추출한 데이터를 리스트 형태로 저장
+    extracted_data = []
+    for name, price in zip(job_name, prices):
+        if '[' in name and ']' in name:
+            extracted_data.append({'직업': name.split(']')[0][1:], '각인': name.split(']')[1][1:], '가격': price})
 
-    writer.writeheader()
-    writer.writerows(data)
+    # 웹드라이버 종료
+    driver.quit()
 
-print(f'데이터가 {csv_file}에 저장되었습니다.')
+    return extracted_data
+
+def write_to_csv(file_path, data):
+    with open(file_path, 'w', encoding='utf-8-sig', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=['직업', '각인', '가격'])
+        writer.writeheader()
+        writer.writerows(data)
+
+# 데이터 추출 및 CSV 파일로 저장
+data = crw()
+write_to_csv('test.csv', data)

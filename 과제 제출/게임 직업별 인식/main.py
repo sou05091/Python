@@ -27,8 +27,8 @@ read_job = ["디스트로이어",
         "도화가",
         "기상술사"]
 for read in read_job:
-    csv_file = 'test_'+read+'.csv'
-    score_file = 'score.csv'
+    csv_file = './csv/test_'+read+'.csv'
+    score_file = './csv/score.csv'
 
     filtered_data = []
     total_scores = []
@@ -66,7 +66,7 @@ for read in read_job:
         total_scores.append(total_score)
 
     # 수정된 데이터를 새로운 CSV 파일에 저장
-    output_file = 'modified_data.csv'
+    output_file = './csv/modified_data.csv'
     fieldnames = filtered_data[0].keys()
 
     with open(output_file, 'w', encoding='utf-8-sig', newline='') as csvfile:
