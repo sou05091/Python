@@ -1,33 +1,13 @@
 import csv
 import matplotlib.pyplot as plt
 
-read_job = ["디스트로이어",
-        "워로드",
-        "버서커",
-        "홀리나이트",
-        "슬레이어",
-        "배틀마스터",
-        "인파이터",
-        "기공사",
-        "창술사",
-        "스트라이커",
-        "데빌헌터",
-        "블래스터",
-        "호크아이",
-        "스카우터",
-        "건슬링어",
-        "바드",
-        "서머너",
-        "아르카나",
-        "소서리스",
-        "블레이드",
-        "데모닉",
-        "리퍼",
-        "소울이터",
-        "도화가",
-        "기상술사"]
+read_job = ["디스트로이어", "워로드", "버서커", "홀리나이트", "슬레이어", "배틀마스터", "인파이터", "기공사", "창술사", "스트라이커", "데빌헌터", "블래스터",
+            "호크아이", "스카우터", "건슬링어", "바드", "서머너", "아르카나", "소서리스", "블레이드", "데모닉", "리퍼", "소울이터", "도화가", "기상술사"]
+
+average_scores = []
+
 for read in read_job:
-    csv_file = 'test_'+read+'.csv'
+    csv_file = 'test_' + read + '.csv'
     score_file = 'score.csv'
 
     filtered_data = []
@@ -74,22 +54,23 @@ for read in read_job:
         writer.writeheader()
         writer.writerows(filtered_data)
 
-    # 데이터 분석 결과 출력
-    #for row in filtered_data:
-    #   if row['점수'] != 0:
-    #      print(f"제목: {row['제목']}, 게시판 내용: {row['게시판 내용']}, 점수: {row['점수']}")
-
-    # 부정적인 말들의 점수 평균
-    # if negative_scores:
-    #    negative_avg = sum(negative_scores) / len(negative_scores)
-    #    print(f"직업 : {read} 부정적인 말들의 점수 평균: {negative_avg}")
-    # else:
-    #    print("부정적인 말들의 점수가 없습니다.")
-
     # 점수가 매겨진 행들의 점수 평균
     if total_scores:
-       total_avg = sum(total_scores) / len(total_scores)
-       print(f"직업 : {read} 점수 평균: {total_avg * 100}")
+        total_avg = sum(total_scores) / len(total_scores)
+        average_scores.append(total_avg * 100)
+        print(f"직업 : {read} 점수 평균: {total_avg * 100}")
     else:
-       print("점수가 매겨진 행들이 없습니다.")
+        print("점수가 매겨진 행들이 없습니다.")
+        
+# 그래프 그리기
+plt.rcParams['font.family'] = 'Malgun Gothic'
 
+plt.figure(figsize=(10, 6))
+plt.bar(read_job, average_scores)
+plt.xlabel('직업')  # X-axis label
+plt.ylabel('점수 평균')  # Y-axis label
+plt.title('직업별 점수 평균')  # Title of the graph
+
+plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
+plt.tight_layout()  # Adjust the spacing
+plt.show()
