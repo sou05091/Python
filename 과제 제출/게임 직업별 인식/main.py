@@ -1,6 +1,16 @@
 import csv
 import matplotlib.pyplot as plt
+import pandas as pd
 
+job = []
+avg = []
+
+def write_to_csv(file_path, data):
+    with open(file_path, 'w', encoding='utf-8-sig', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['직업', '점수'])
+        writer.writerows(data)
+        
 read_job = ["디스트로이어",
         "워로드",
         "버서커",
@@ -88,8 +98,16 @@ for read in read_job:
 
     # 점수가 매겨진 행들의 점수 평균
     if total_scores:
-       total_avg = sum(total_scores) / len(total_scores)
-       print(f"직업 : {read} 점수 평균: {total_avg * 100}")
+        total_avg = sum(total_scores) / len(total_scores)
+        print(f"직업 : {read} 점수 평균: {(total_avg * 100)}")
+        job.append(read)
+        avg.append(total_avg * 100)
+        
     else:
        print("점수가 매겨진 행들이 없습니다.")
-
+print(job, avg)
+df = pd.DataFrame({'직업': job, '점수': avg})
+#save_df = job,avg
+# csv파일 저장
+save_df = df[['직업','점수']].values.tolist()
+write_to_csv('./csv/score_final.csv', save_df)

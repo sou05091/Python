@@ -41,7 +41,7 @@ def plot_bar_graph_price(file_path):
     test = df['평균가격']/100
     # csv파일 저장
     save_df = df[['직업','평균가격']].values.tolist()
-    write_to_csv('./csv/price_final.csv', save_df)
+    write_to_csv('price_test.csv', save_df)
 
     # pivot_table 생성
     plt.rcParams['font.family'] = 'Malgun Gothic'
